@@ -6,6 +6,7 @@
 2. Create express server
 3. Secure api
 4. MVC architecture
+5. Mongodb as a server
 
 ### Package list
 
@@ -16,3 +17,4 @@
 5. xss-clean
 6. express-rate-limit
 7. dotenv
+8. mongoose

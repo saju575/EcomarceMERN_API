@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const createErrors = require("http-errors");
 const xssClean = require("xss-clean");
 const rateLimit = require("express-rate-limit");
+const userRouter = require("./routers/users.routers");
 // make app
 
 const app = express();
@@ -22,11 +23,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send({
-    message: "Everything is fine",
-  });
-});
+// get users
+
+app.use("/api/users", userRouter);
 
 //client error handling
 
@@ -37,9 +36,10 @@ app.use((req, res, next) => {
 //server error handling ->  all the error come here
 
 app.use((err, req, res, next) => {
+  const errorStatus = err.status || 500;
   return res
-    .status(err.status || 500)
-    .json({ success: false, message: err.message });
+    .status(errorStatus)
+    .json({ success: false, status: errorStatus, message: err.message });
 });
 
 module.exports = app;
