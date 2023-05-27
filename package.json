@@ -1,0 +1,23 @@
+{
+  "name": "e_commerce_mern_api",
+  "version": "1.0.0",
+  "description": "Ecomarce MERN stack project api",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Ecomarce",
+    "MERN"
+  ],
+  "author": "sakil ahmed",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0"
+  }
+}
