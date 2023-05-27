@@ -4,6 +4,8 @@
 
 1. Environment setup
 2. Create express server
+3. Secure api
+4. MVC architecture
 
 ### Package list
 
@@ -11,3 +13,6 @@
 2. nodemon
 3. morgan
 4. http-errors
+5. xss-clean
+6. express-rate-limit
+7. dotenv
