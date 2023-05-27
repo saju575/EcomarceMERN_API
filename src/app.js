@@ -4,6 +4,7 @@ const createErrors = require("http-errors");
 const xssClean = require("xss-clean");
 const rateLimit = require("express-rate-limit");
 const userRouter = require("./routers/users.routers");
+const seedUserRouter = require("./routers/seedUser.routers");
 // make app
 
 const app = express();
@@ -23,8 +24,10 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// get users
+//seed user
+app.use("/api/seed", seedUserRouter);
 
+// get users
 app.use("/api/users", userRouter);
 
 //client error handling
