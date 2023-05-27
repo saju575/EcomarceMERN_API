@@ -7,6 +7,7 @@
 3. Secure api
 4. MVC architecture
 5. Mongodb as a server
+6. Schema and model for user
 
 ### Package list
 
