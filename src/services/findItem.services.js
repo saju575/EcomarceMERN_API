@@ -27,19 +27,16 @@ exports.findUsers = async (page = 1, limit = 5, filter = {}) => {
 
 //find one user
 
-exports.findUser = async (id) => {
+exports.findWithId = async (Model, id, options = {}) => {
   //options for find method
   try {
-    const options = {
-      password: 0,
-      __v: 0,
-    };
-    const user = await User.findById(id, options);
-    if (!user || user.length === 0) throw createError(404, "No user found");
-    return user;
+    const item = await Model.findById(id, options);
+    if (!item)
+      throw createError(404, `${Model.modelName} does not exist with this id`);
+    return item;
   } catch (error) {
     if (error instanceof mongoose.Error) {
-      throw createError(404, "Invalid user ID");
+      throw createError(404, "Invalid  ID");
     }
     throw error;
   }

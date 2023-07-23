@@ -1,8 +1,9 @@
-const mongoose = require("mongoose");
 const createError = require("http-errors");
+const fs = require("fs").promises;
 const User = require("../models/user.models");
 const { successResponse } = require("./response.controllers");
-const { findUser, findUsers } = require("../services/users.services");
+const { findUsers, findWithId } = require("../services/findItem.services");
+const { deleteImage } = require("../helper/deleteImage.helper");
 
 //export all matching users functions
 
@@ -50,13 +51,15 @@ exports.getUsers = async (req, res, next) => {
 
 //export get one user function
 
-exports.getUser = async (req, res, next) => {
+exports.getUserById = async (req, res, next) => {
   try {
     //get Id parameter
     const id = req.params.id;
 
+    const options = { password: 0 };
+
     //get user
-    const user = await findUser(id);
+    const user = await findWithId(User, id, options);
 
     // return all matching users
     return successResponse(res, {
@@ -64,6 +67,38 @@ exports.getUser = async (req, res, next) => {
       payload: {
         user,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// export delete user function
+
+exports.deleteUserById = async (req, res, next) => {
+  try {
+    //get Id parameter
+    const id = req.params.id;
+
+    const options = { password: 0 };
+
+    //get user
+    const user = await findWithId(User, id, options);
+
+    const userImagePath = user.image;
+
+    if (!user.isAdmin) {
+      await deleteImage(userImagePath);
+    }
+
+    // delete user
+
+    await User.findByIdAndDelete({ _id: id, isAdmin: false });
+
+    // return all matching users
+    return successResponse(res, {
+      statusCode: 200,
+      message: "User deleted successfully",
     });
   } catch (error) {
     next(error);
