@@ -1,9 +1,12 @@
 const createError = require("http-errors");
-const fs = require("fs").promises;
+
 const User = require("../models/user.models");
 const { successResponse } = require("./response.controllers");
 const { findUsers, findWithId } = require("../services/findItem.services");
 const { deleteImage } = require("../helper/deleteImage.helper");
+const { createJWTToken } = require("../helper/jwt.helper");
+const { jwtActivationKey, clientURL } = require("../secret");
+const { emailWithNodeMailer } = require("../helper/email.helper");
 
 //export all matching users functions
 
@@ -99,6 +102,59 @@ exports.deleteUserById = async (req, res, next) => {
     return successResponse(res, {
       statusCode: 200,
       message: "User deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// process email registration for post request
+exports.procesRegister = async (req, res, next) => {
+  try {
+    //destructure all registration data
+
+    const { name, email, password, phone, address, gender } = req.body;
+
+    //check user already exist or not
+
+    const userExists = await User.exists({ email });
+    if (userExists) {
+      throw createError(
+        409,
+        "User with this email already exists. Please sign in."
+      );
+    }
+
+    // create jwt token
+    const jwtToken = createJWTToken(
+      { name, email, password, phone, address, gender },
+      jwtActivationKey,
+      "10m"
+    );
+
+    // prepare email
+    const emailData = {
+      email,
+      subject: `Account Activation Email`,
+      html: `
+      <h2>Hello ${name}</h2>
+      <p>Please click here to <a href="${clientURL}/api/users/activate/${jwtToken}" target="_blank">activate your account</a></p>
+      `,
+    };
+    // send email with nodemail
+
+    try {
+      await emailWithNodeMailer(emailData);
+    } catch (emailError) {
+      next(createError(500, "Failed to send varification email"));
+      return;
+    }
+
+    // return success response
+
+    return successResponse(res, {
+      statusCode: 200,
+      message: `Please got to your ${email} for completing your registration process`,
     });
   } catch (error) {
     next(error);
