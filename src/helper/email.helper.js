@@ -19,8 +19,7 @@ exports.emailWithNodeMailer = async (emailData) => {
       subject: emailData.subject,
       html: emailData.html,
     };
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Message sent: %s", info.response);
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     throw error;
   }

@@ -1,4 +1,5 @@
 const createError = require("http-errors");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/user.models");
 const { successResponse } = require("./response.controllers");
@@ -155,7 +156,50 @@ exports.procesRegister = async (req, res, next) => {
     return successResponse(res, {
       statusCode: 200,
       message: `Please got to your ${email} for completing your registration process`,
+      payload: { token: jwtToken },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// activate user registration data store into database
+exports.activateUserAccount = async (req, res, next) => {
+  try {
+    const token = req.body.token;
+    // if token is not provided
+    if (!token) throw createError(404, "Token missing");
+    try {
+      // decode token data
+      const decoded = jwt.verify(token, jwtActivationKey);
+
+      if (!decoded) throw createError(401, "User is not veryfied");
+
+      //check user already exist or not
+
+      const userExists = await User.exists({ email: decoded.email });
+      if (userExists) {
+        throw createError(
+          409,
+          "User with this email already exists. Please sign in."
+        );
+      }
+
+      // create new user and add to db
+      await User.create(decoded);
+      // return success response
+
+      return successResponse(res, {
+        statusCode: 201,
+        message: `User was registered successfully`,
+      });
+    } catch (err) {
+      if (err.name === "TokenExpiredError")
+        throw createError(401, "Token has expired");
+      else if (err.name === "JsonWebTokenError")
+        throw createError(401, "Invalid Token");
+      else throw err;
+    }
   } catch (error) {
     next(error);
   }

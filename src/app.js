@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const createErrors = require("http-errors");
 const xssClean = require("xss-clean");
@@ -22,8 +23,8 @@ const rateLimiter = rateLimit({
 app.use(rateLimiter);
 app.use(xssClean());
 app.use(morgan("dev"));
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 //seed user
 app.use("/api/seed", seedUserRouter);
