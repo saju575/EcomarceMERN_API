@@ -38,8 +38,13 @@ const userRegistrationSchema = {
   },
   image: {
     optional: true,
-    isString: {
-      errorMessage: "Image must a path",
+    customSanitizer: {
+      options: (value, { req }) => {
+        if (!req.file || !req.file.buffer) {
+          throw new Error("User image is required");
+        }
+        return true;
+      },
     },
   },
   gender: {

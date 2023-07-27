@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
-const { defaultImagePath } = require("../secret");
+const path = require("path");
+const fs = require("fs");
 
 const userSchema = new Schema(
   {
@@ -38,8 +39,11 @@ const userSchema = new Schema(
       enum: ["male", "female", "others"],
     },
     image: {
-      type: String,
-      default: defaultImagePath,
+      type: Buffer,
+      contentType: String,
+      default: fs
+        .readFileSync(path.join("public/images/users", "default.jpg"))
+        .toString("base64"),
     },
     address: {
       type: String,

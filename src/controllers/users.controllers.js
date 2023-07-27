@@ -1,5 +1,7 @@
 const createError = require("http-errors");
 const jwt = require("jsonwebtoken");
+const path = require("path");
+const fs = require("fs");
 
 const User = require("../models/user.models");
 const { successResponse } = require("./response.controllers");
@@ -88,12 +90,15 @@ exports.deleteUserById = async (req, res, next) => {
 
     //get user
     const user = await findWithId(User, id, options);
-
-    const userImagePath = user.image;
-
-    if (!user.isAdmin) {
-      await deleteImage(userImagePath);
+    if (!user) {
+      throw new Error("User not found");
     }
+
+    // const userImagePath = user.image;
+
+    // if (!user.isAdmin) {
+    //   await deleteImage(userImagePath);
+    // }
 
     // delete user
 
@@ -126,9 +131,23 @@ exports.procesRegister = async (req, res, next) => {
       );
     }
 
+    // check the user provided the image or not
+    let imageBufferString;
+    if (req.file) {
+      imageBufferString = req.file.buffer.toString("base64");
+    }
+
     // create jwt token
     const jwtToken = createJWTToken(
-      { name, email, password, phone, address, gender },
+      {
+        name,
+        email,
+        password,
+        phone,
+        address,
+        gender,
+        image: imageBufferString,
+      },
       jwtActivationKey,
       "10m"
     );
@@ -139,7 +158,9 @@ exports.procesRegister = async (req, res, next) => {
       subject: `Account Activation Email`,
       html: `
       <h2>Hello ${name}</h2>
-      <p>Please click here to <a href="${clientURL}/api/users/activate/${jwtToken}" target="_blank">activate your account</a></p>
+      <p>Please click here to 
+      <a href="${clientURL}/api/users/activate/${jwtToken}" target="_blank">activate your account</a>
+      </p>
       `,
     };
     // send email with nodemail
@@ -204,3 +225,14 @@ exports.activateUserAccount = async (req, res, next) => {
     next(error);
   }
 };
+
+// update user by Id
+
+// exports.updateUserById=async(req, res, next) => {
+//   try {
+//     const userId=req.params.id;
+//     const updateOptions={new:true,runValidators:true,context:"query"}
+//   } catch (error) {
+
+//   }
+// }
