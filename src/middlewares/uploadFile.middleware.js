@@ -31,7 +31,7 @@ const fileFilter = (req, file, cb) => {
     return cb(new Error("Only image files are allowed"), false);
   }
   if (file.size > MAX_FILE_SIZE) {
-    return cb(new Error("File is too large.Don't exceeds over 2MB"), false);
+    return cb(new Error("File is too large.Don't exceeds over 1MB"), false);
   }
   if (!ALLOWED_FILE_TYPES.includes(file.mimetype)) {
     return cb(new Error("File type is not allowewd"), false);

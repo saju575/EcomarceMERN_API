@@ -1,7 +1,5 @@
 const createError = require("http-errors");
 const jwt = require("jsonwebtoken");
-const path = require("path");
-const fs = require("fs");
 
 const User = require("../models/user.models");
 const { successResponse } = require("./response.controllers");
@@ -10,6 +8,7 @@ const { deleteImage } = require("../helper/deleteImage.helper");
 const { createJWTToken } = require("../helper/jwt.helper");
 const { jwtActivationKey, clientURL } = require("../secret");
 const { emailWithNodeMailer } = require("../helper/email.helper");
+const { MAX_FILE_SIZE } = require("../config/index.config");
 
 //export all matching users functions
 
@@ -133,8 +132,14 @@ exports.procesRegister = async (req, res, next) => {
 
     // check the user provided the image or not
     let imageBufferString;
-    if (req.file) {
-      imageBufferString = req.file.buffer.toString("base64");
+    const image = req.file;
+
+    if (image) {
+      if (image.size > MAX_FILE_SIZE) {
+        throw new Error("File is too big. It must be at less then 1MB");
+      } else {
+        imageBufferString = image.buffer.toString("base64");
+      }
     }
 
     // create jwt token
@@ -228,11 +233,57 @@ exports.activateUserAccount = async (req, res, next) => {
 
 // update user by Id
 
-// exports.updateUserById=async(req, res, next) => {
-//   try {
-//     const userId=req.params.id;
-//     const updateOptions={new:true,runValidators:true,context:"query"}
-//   } catch (error) {
+exports.updateUserById = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    // check that the user exists or not
+    await findWithId(User, userId);
 
-//   }
-// }
+    const updateOptions = { new: true, runValidators: true, context: "query" };
+    // update name, password, phone, image, address, gender
+
+    let updateInfo = {};
+
+    for (let key in req.body) {
+      if (
+        ["name", "password", "phone", "image", "address", "gender"].includes(
+          key
+        )
+      ) {
+        updateInfo[key] = req.body[key];
+      }
+    }
+    // image size and image into buffer string
+
+    const image = req.file;
+
+    if (image) {
+      imageBufferString = image.buffer.toString("base64");
+      if (image.size > MAX_FILE_SIZE) {
+        throw new Error("File is too big. It must be at less then 1MB");
+      } else {
+        updateInfo.image = image.buffer.toString("base64");
+      }
+    }
+
+    //update user into Database
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateInfo,
+      updateOptions
+    ).select("-password");
+
+    // if not updated user
+
+    if (!updatedUser) {
+      throw new Error("User with this id does not exist");
+    }
+    return successResponse(res, {
+      statusCode: 201,
+      message: `User was registered successfully`,
+      payload: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

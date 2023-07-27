@@ -5,12 +5,15 @@ const {
   deleteUserById,
   procesRegister,
   activateUserAccount,
+  updateUserById,
 } = require("../controllers/users.controllers");
 
 const { upload } = require("../middlewares/uploadFile.middleware");
 const {
   userRegistrationValidation,
   handleUnknownFieldsOfUserResgistration,
+  userUpdationValidation,
+  handleUnknownFieldsOfUserUpdation,
 } = require("../validators/auth.validator");
 const { runValidation } = require("../validators/run.validator");
 
@@ -36,7 +39,16 @@ userRouter.post("/register-verify", activateUserAccount);
 userRouter.get("/all", getUsers);
 
 // get userById and delete user by id and update userById
-userRouter.route("/:id").get(getUserById).delete(deleteUserById);
-// .patch(updateUserById);
+userRouter
+  .route("/:id")
+  .get(getUserById)
+  .delete(deleteUserById)
+  .patch(
+    upload.single("image"),
+    handleUnknownFieldsOfUserUpdation,
+    userUpdationValidation,
+    runValidation,
+    updateUserById
+  );
 
 module.exports = userRouter;
