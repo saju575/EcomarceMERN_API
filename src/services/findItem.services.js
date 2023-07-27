@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const createError = require("http-errors");
-const User = require("../models/user.models");
+const User = require("../models/user.model");
 
 //find many users
 

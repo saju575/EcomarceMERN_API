@@ -1,12 +1,11 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const createErrors = require("http-errors");
 const xssClean = require("xss-clean");
 const rateLimit = require("express-rate-limit");
-const userRouter = require("./routers/users.routers");
-const seedUserRouter = require("./routers/seedUser.routers");
-const { errorResponse } = require("./controllers/response.controllers");
+const userRouter = require("./routers/users.router");
+const seedUserRouter = require("./routers/seedUser.router");
+const { errorResponse } = require("./controllers/response.controller");
 // make app
 
 const app = express();

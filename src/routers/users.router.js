@@ -6,7 +6,7 @@ const {
   procesRegister,
   activateUserAccount,
   updateUserById,
-} = require("../controllers/users.controllers");
+} = require("../controllers/users.controller");
 
 const { upload } = require("../middlewares/uploadFile.middleware");
 const {

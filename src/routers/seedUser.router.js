@@ -1,5 +1,5 @@
 const express = require("express");
-const { seedUsers } = require("../controllers/seedUsers.controllers");
+const { seedUsers } = require("../controllers/seedUsers.controller");
 
 const seedUserRouter = express.Router();
 

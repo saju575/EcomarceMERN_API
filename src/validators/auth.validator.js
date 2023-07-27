@@ -1,5 +1,5 @@
 const { checkSchema } = require("express-validator");
-const { errorResponse } = require("../controllers/response.controllers");
+const { errorResponse } = require("../controllers/response.controller");
 
 const userRegistrationSchema = {
   name: {
