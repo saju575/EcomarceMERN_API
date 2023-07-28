@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 const { successResponse } = require("./response.controller");
 const { findUsers, findWithId } = require("../services/findItem.services");
-const { deleteImage } = require("../helper/deleteImage.helper");
 const { createJWTToken } = require("../helper/jwt.helper");
 const { jwtActivationKey, clientURL } = require("../secret");
 const { emailWithNodeMailer } = require("../helper/email.helper");

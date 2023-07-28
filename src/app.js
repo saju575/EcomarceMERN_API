@@ -6,6 +6,7 @@ const rateLimit = require("express-rate-limit");
 const userRouter = require("./routers/users.router");
 const seedUserRouter = require("./routers/seedUser.router");
 const { errorResponse } = require("./controllers/response.controller");
+const authRouter = require("./routers/auth.router");
 // make app
 
 const app = express();
@@ -28,8 +29,12 @@ app.use(express.json());
 //seed user
 app.use("/api/seed", seedUserRouter);
 
-// get users
+//  users signup, get, delete, update routes
 app.use("/api/users", userRouter);
+
+// users signin routes
+
+app.use("/api/users/auth", authRouter);
 
 //client error handling
 

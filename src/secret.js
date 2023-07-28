@@ -9,6 +9,8 @@ exports.defaultImagePath =
 
 exports.jwtActivationKey = process.env.JWT_ACTIVATION_KEY || "jdkekkw^^555%7";
 
+exports.jwtAccessKey = process.env.JWT_ACCESS_KEY;
+
 exports.smtpUserName = process.env.SMTP_EMAIL;
 
 exports.smtpUserPassword = process.env.SMTP_EMAIL_PASS;
